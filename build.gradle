@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'idea'
     id 'eclipse'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'org.springframework.boot' version "$spring_boot_version"
-    id 'com.google.cloud.tools.jib' version '1.8.0'
+    id 'com.google.cloud.tools.jib' version '3.4.2'
 }
 
 ext {
@@ -16,12 +16,12 @@ ext {
 group "$artifact_group"
 version "$project_version"
 
-sourceCompatibility = JavaVersion.VERSION_12
-targetCompatibility = JavaVersion.VERSION_12
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 bootJar {
-    baseName = "$project_name"
-    version = "$project_version"
+    archiveBaseName = "$project_name"
+    archiveVersion = "$project_version"
 }
 
 repositories {
@@ -34,18 +34,18 @@ dependencies {
     // Spring Data
     //implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "$spring_boot_version"
     // Spring MongoDB Reactive
-    //implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive', version: "$spring_boot_version"
+    //implementation gr`oup: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive', version: "$spring_boot_version"
     // Discord4J
     implementation group: 'com.discord4j', name: 'discord4j-core', version: "$d4j_version"
     // Reflections (For BotModules)
-    implementation group: 'org.reflections', name: 'reflections', version: '0.9.11'
+    implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
     // @NotNull annotations
-    implementation group: 'org.checkerframework', name: 'checker', version: '2.1.12'
+    implementation group: 'org.checkerframework', name: 'checker', version: '3.42.0'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$spring_boot_version"
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.18.3'
-    testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.2'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$spring_boot_version"
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
+    testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '4.12.6'
 }
 
 processResources {
@@ -78,7 +78,7 @@ static def getBranchName() {
 
 jib {
     from {
-        image = 'openjdk:12'
+        image = 'openjdk:21'
     }
     to {
         image = "techtony96/boltbot:$project_version-".toString() + getCommitHash()
@@ -94,7 +94,7 @@ jib {
         }
         auth {
             username = 'techtony96'
-            password = System.getenv('DOCKER_PASSWORD')
+            password = System.getenv('DOCKER_PASSWORD') ?: ""
         }
     }
     container {
