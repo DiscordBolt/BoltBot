@@ -1,6 +1,7 @@
 package com.discordbolt.boltbot.discord.api.commands;
 
-import discord4j.core.object.util.Permission;
+import discord4j.rest.util.Permission;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

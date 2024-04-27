@@ -4,7 +4,11 @@ import com.discordbolt.boltbot.discord.api.commands.BotCommand;
 import com.discordbolt.boltbot.discord.api.commands.CommandContext;
 import com.discordbolt.boltbot.discord.util.BeanUtil;
 import discord4j.common.GitProperties;
-import discord4j.core.DiscordClient;
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.spec.EmbedCreateFields;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.util.Color;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +18,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +31,8 @@ public class BoltService {
     public static final String PACKAGE_PREFIX = "com.discordbolt.boltbot";
     private static final Logger LOGGER = LoggerFactory.getLogger(BoltService.class);
 
-    private DiscordClient client;
-    private String version, commit;
+    private final GatewayDiscordClient client;
+    private final String version, commit;
     private List<BotModule> botModules;
 
     @Autowired
@@ -77,15 +80,18 @@ public class BoltService {
 
     @BotCommand(command = "version", description = "Version information", usage = "version", module = "misc", aliases = "v")
     public static void version(CommandContext context) {
-        context.replyWith(spec -> {
-            String boltVersion = BeanUtil.getBean(BoltService.class).getVersion();
-            String boltCommit = BeanUtil.getBean(BoltService.class).getCommit();
-            String d4jVersion = GitProperties.getProperties().getProperty(GitProperties.APPLICATION_VERSION);
+        String boltVersion = BeanUtil.getBean(BoltService.class).getVersion();
+        String boltCommit = BeanUtil.getBean(BoltService.class).getCommit();
+        String d4jVersion = GitProperties.getProperties().getProperty(GitProperties.APPLICATION_VERSION);
 
-            spec.setColor(new Color(16768100));
-            spec.addField("Version", boltVersion, true);
-            spec.addField("Commit", "[" + boltCommit + "](https://github.com/DiscordBolt/BoltBot/commit/" + boltCommit + ")", true);
-            spec.addField("D4J Version", "[" + d4jVersion + "](https://github.com/Discord4J/Discord4J/releases/tag/" + d4jVersion + ")", true);
-        }).subscribe();
+        context.replyWith(MessageCreateSpec.create()
+                .withEmbeds(EmbedCreateSpec.create()
+                        .withColor(Color.of(16768100))
+                        .withFields(
+                                EmbedCreateFields.Field.of("Version", boltVersion, true),
+                                EmbedCreateFields.Field.of("Commit", "[" + boltCommit + "](https://github.com/DiscordBolt/BoltBot/commit/" + boltCommit + ")", true),
+                                EmbedCreateFields.Field.of("D4J Version", "[" + d4jVersion + "](https://github.com/Discord4J/Discord4J/releases/tag/" + d4jVersion + ")", true)
+                        )))
+        .subscribe();
     }
 }

@@ -1,12 +1,12 @@
 package com.discordbolt.boltbot.discord.api.commands;
 
 import com.discordbolt.boltbot.discord.api.commands.exceptions.ExceptionMessage;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.TextChannel;
-import discord4j.core.object.util.PermissionSet;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.rest.util.PermissionSet;
 import reactor.core.publisher.Mono;
 
 class ValidityCheck {

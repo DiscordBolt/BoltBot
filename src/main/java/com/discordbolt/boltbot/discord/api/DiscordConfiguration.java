@@ -1,7 +1,11 @@
 package com.discordbolt.boltbot.discord.api;
 
 import discord4j.core.DiscordClient;
-import discord4j.core.DiscordClientBuilder;
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.object.presence.ClientActivity;
+import discord4j.core.object.presence.ClientPresence;
+import discord4j.gateway.intent.IntentSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,20 +19,28 @@ public class DiscordConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordConfiguration.class);
 
-    private DiscordClient client;
+    private final String token;
+
+    private GatewayDiscordClient client;
 
     public DiscordConfiguration(@Value("${discord.token}") String token) {
         LOGGER.info("Starting configuration of Discord Client");
-        client = new DiscordClientBuilder(token).build();
+       this.token = token;
     }
 
     @Bean
-    public DiscordClient getClient() {
+    public GatewayDiscordClient getClient() {
         return client;
     }
 
     protected void login() {
         LOGGER.info("Logging into Discord...");
-        client.login().subscribe(); // In most cases .block() should be used to keep the thread alive. (Spring keeps non-daemon threads running)
+        client = DiscordClient.create(token)
+                .gateway()
+                .setEnabledIntents(IntentSet.all())
+                .withEventDispatcher(d -> d.on(ReadyEvent.class)
+                        .doOnNext(readyEvent -> LOGGER.info("Ready: {}", readyEvent.getShardInfo())))
+                .setInitialPresence(s -> ClientPresence.online(ClientActivity.playing("line 1").withState("line 2")))
+                .login().block();
     }
 }

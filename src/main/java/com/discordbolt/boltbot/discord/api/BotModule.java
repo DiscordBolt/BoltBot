@@ -1,8 +1,8 @@
 package com.discordbolt.boltbot.discord.api;
 
-import discord4j.core.DiscordClient;
+import discord4j.core.GatewayDiscordClient;
 
 public interface BotModule {
 
-    void initialize(DiscordClient client);
+    void initialize(GatewayDiscordClient client);
 }

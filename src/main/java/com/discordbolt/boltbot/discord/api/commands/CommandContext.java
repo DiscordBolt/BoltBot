@@ -1,22 +1,23 @@
 package com.discordbolt.boltbot.discord.api.commands;
 
-import discord4j.core.DiscordClient;
+import discord4j.common.util.Snowflake;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.*;
-import discord4j.core.object.util.Snowflake;
-import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
+import discord4j.core.spec.MessageCreateSpec;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public class CommandContext {
 
-    private Message message;
+    private final Message message;
     private List<String> arguments;
-    private CustomCommand customCommand;
+    private final CustomCommand customCommand;
 
     CommandContext(Message message, CustomCommand customCommand) {
         this.message = message;
@@ -54,7 +55,7 @@ public class CommandContext {
 
     public String getMessageContent() {
         // The message has to have content otherwise the command wouldn't have been fired.
-        return message.getContent().get();
+        return message.getContent();
     }
 
     public List<String> getArguments() {
@@ -75,7 +76,7 @@ public class CommandContext {
         return sb.toString();
     }
 
-    public DiscordClient getClient() {
+    public GatewayDiscordClient getClient() {
         return message.getClient();
     }
 
@@ -102,24 +103,13 @@ public class CommandContext {
     }
 
     /**
-     * Reply to the command with a given embed Note: Make sure to subscribe to the result or no
+     * Reply to the command with a given message Note: Make sure to subscribe to the result or no
      * embed will be sent.
      *
-     * @param embed Embed to send
+     * @param spec Message
      */
-    public Mono<Message> replyWith(Consumer<EmbedCreateSpec> embed) {
-        return getChannel().flatMap(channel -> channel.createEmbed(embed));
-    }
-
-    /**
-     * Reply to the command with a given message and embed Note: Make sure to subscribe to the
-     * result or no message will be sent.
-     *
-     * @param message Message to send
-     * @param embed Embed to send
-     */
-    public Mono<Message> replyWith(String message, Consumer<EmbedCreateSpec> embed) {
-        return getChannel().flatMap(channel -> channel.createMessage(spec -> spec.setContent(message).setEmbed(embed)));
+    public Mono<Message> replyWith(MessageCreateSpec spec) {
+        return getChannel().flatMap(channel -> channel.createMessage(spec));
     }
 
     /**

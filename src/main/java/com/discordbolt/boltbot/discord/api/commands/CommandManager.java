@@ -1,6 +1,6 @@
 package com.discordbolt.boltbot.discord.api.commands;
 
-import discord4j.core.DiscordClient;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.Guild;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -20,23 +20,23 @@ import org.slf4j.LoggerFactory;
 public class CommandManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
-    private static String DEFAULT_PREFIX = "!";
+    private static final String DEFAULT_PREFIX = "!";
 
-    private DiscordClient client;
-    private List<CustomCommand> commands = new ArrayList<>();
-    private Map<Long, String> commandPrefixes = new HashMap<>();
-    private CustomCommand helpCommand;
+    private final GatewayDiscordClient client;
+    private final List<CustomCommand> commands = new ArrayList<>();
+    private final Map<Long, String> commandPrefixes = new HashMap<>();
+    private final CustomCommand helpCommand;
 
     /**
      * Initialize Command API
      *
-     * @param client DiscordClient
+     * @param client GatewayDiscordClient
      * @param packagePrefix package string where commands are located
      */
-    public CommandManager(DiscordClient client, String packagePrefix) {
+    public CommandManager(GatewayDiscordClient client, String packagePrefix) {
         LOGGER.info("Initializing Command API ");
 
-        // Save DiscordClient
+        // SaveGatewayGatewayDiscordClient
         this.client = client;
 
         // Set the command manager
@@ -58,7 +58,7 @@ public class CommandManager {
                         }
                     }
                 })
-                .collect(Collectors.toList()));
+                .toList());
 
         // Register our help command
         helpCommand = new HelpCommand(this);
@@ -104,9 +104,9 @@ public class CommandManager {
     /**
      * Get the Discord4J client
      *
-     * @return IDiscordClient
+     * @return IGatewayDiscordClient
      */
-    DiscordClient getClient() {
+   GatewayDiscordClient getClient() {
         return client;
     }
 

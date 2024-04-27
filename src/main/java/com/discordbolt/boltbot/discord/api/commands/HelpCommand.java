@@ -1,15 +1,19 @@
 package com.discordbolt.boltbot.discord.api.commands;
 
+import discord4j.core.spec.EmbedCreateFields;
 import discord4j.core.spec.EmbedCreateSpec;
-import java.awt.Color;
+import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.util.Color;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 class HelpCommand extends CustomCommand {
 
-    private static String[] command = {"help"};
+    private static final String[] command = {"help"};
 
-    private CommandManager manager;
+    private final CommandManager manager;
 
     HelpCommand(CommandManager manager) {
         super(command);
@@ -25,7 +29,7 @@ class HelpCommand extends CustomCommand {
         if (cc.getArgCount() > 1) {
             String userRequestedModule = cc.combineArgs(1, cc.getArgCount() - 1);
             modules.removeIf(s -> !s.equalsIgnoreCase(userRequestedModule));
-            if (modules.size() < 1) {
+            if (modules.isEmpty()) {
                 cc.replyWith("No modules found matching \"" + userRequestedModule + "\".").subscribe();
                 return;
             }
@@ -39,13 +43,16 @@ class HelpCommand extends CustomCommand {
         }
 
         String commandPrefix = cc.getGuild().map(manager::getCommandPrefix).block();
-        cc.replyWith("Available Commands:", spec -> createHelpEmbed(spec, modules, commandPrefix)).subscribe();
+        cc.replyWith(MessageCreateSpec.create()
+                .withContent("Available Commands:")
+                        .withEmbeds(createHelpEmbed(modules, commandPrefix))
+        ).subscribe();
     }
 
 
-    private EmbedCreateSpec createHelpEmbed(EmbedCreateSpec embed, List<String> modules, String commandPrefix) {
+    private EmbedCreateSpec createHelpEmbed(List<String> modules, String commandPrefix) {
         int fieldCount = 0;
-        embed.setColor(new Color(36, 153, 153));
+        List<EmbedCreateFields.Field> fields = new ArrayList<>();
 
         StringBuilder sb = new StringBuilder();
         for (String module : modules) {
@@ -68,13 +75,16 @@ class HelpCommand extends CustomCommand {
                 sb.setLength(1024);
             }
 
-            if (module.length() == 0 || sb.length() == 0) {
+            if (module.isEmpty() || sb.length() == 0) {
                 continue;
             }
 
             fieldCount++;
-            embed.addField(module, sb.toString(), false);
+            fields.add(EmbedCreateFields.Field.of(module, sb.toString(), false));
         }
-        return embed;
+
+        return EmbedCreateSpec.create()
+                .withColor(Color.of(36, 153, 153))
+                .withFields(fields);
     }
 }

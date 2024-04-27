@@ -2,10 +2,10 @@ package com.discordbolt.boltbot.discord.api.commands;
 
 import com.discordbolt.boltbot.discord.api.commands.exceptions.CommandException;
 import com.discordbolt.boltbot.discord.api.commands.exceptions.CommandRuntimeException;
-import com.sun.istack.internal.NotNull;
+import com.github.javaparser.quality.NotNull;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.util.Permission;
-import discord4j.core.object.util.PermissionSet;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -25,7 +25,7 @@ public abstract class CustomCommand {
     private static Consumer<CommandContext> commandConsumer;
     private static CommandManager manager;
 
-    private List<String> command;
+    private final List<String> command;
 
     private String description = "";
     private String usage = "";
@@ -34,10 +34,10 @@ public abstract class CustomCommand {
     private Set<String> aliases = new HashSet<>();
     private Set<Long> channelWhitelist = new HashSet<>();
     private Set<Long> channelBlacklist = new HashSet<>();
-    private Set<String> channelNameWhitelist = new HashSet<>();
-    private Set<String> channelNameBlacklist = new HashSet<>();
+    private final Set<String> channelNameWhitelist = new HashSet<>();
+    private final Set<String> channelNameBlacklist = new HashSet<>();
     private PermissionSet permissions = PermissionSet.none();
-    private int[] argRange = new int[]{0, Integer.MAX_VALUE};
+    private final int[] argRange = new int[]{0, Integer.MAX_VALUE};
     private boolean secret, allowDM, deleteTrigger;
 
     CustomCommand(BotCommand a) {

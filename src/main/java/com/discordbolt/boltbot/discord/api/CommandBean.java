@@ -2,7 +2,7 @@ package com.discordbolt.boltbot.discord.api;
 
 import com.discordbolt.boltbot.discord.api.commands.CommandManager;
 import com.discordbolt.boltbot.discord.api.commands.CustomCommand;
-import discord4j.core.DiscordClient;
+import discord4j.core.GatewayDiscordClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,11 @@ public class CommandBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandBean.class);
 
-    private DiscordClient client;
+    private final GatewayDiscordClient client;
     private CommandManager commandManager;
 
     @Autowired
-    public CommandBean(DiscordClient client) {
+    public CommandBean(GatewayDiscordClient client) {
         this.client = client;
         initCommands();
     }
